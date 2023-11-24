@@ -59,25 +59,6 @@ func SqlInsert_User(usr, passwd, role string) error {
 	return nil
 }
 
-func sqldelete_User() {
-
-}
-
-func SqlUpdate_User() {
-
-}
-
 func SqlQuery_User() {
 
 }
-
-/*
-仅测试 不使用
-_func main() {
-	err := Insert("全志愿", "000000", "Doctor")
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-	}
-
-}
-*/
