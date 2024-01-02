@@ -16,6 +16,7 @@ func PatientRegister(ctx *gin.Context) {
 	username := ctx.Query("pName")
 	account := ctx.Query("pId")
 	password := ctx.Query("pPassword")
+	gender := ctx.Query("pGender")
 	email := ctx.Query("pEmail")
 	phone_number := ctx.Query("pPhone")
 	date_of_birth := ctx.Query("pBirthday")
@@ -31,7 +32,7 @@ func PatientRegister(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"code": 422, "msg": "密码不能少于6位"})
 		return
 	}
-	if isTelephoneExist(DB, phone_number) {
+	if IsTelephoneExist(DB, phone_number) {
 		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"code": 422, "msg": "手机号已经被注册"})
 		return
 	}
@@ -49,6 +50,7 @@ func PatientRegister(ctx *gin.Context) {
 		Account:        account,
 		Password:       string(hasedPassword),
 		Role:           role,
+		Gender:         gender,
 		Email:          email,
 		Phone_number:   phone_number,
 		Id_card_number: id_card,
@@ -101,7 +103,7 @@ func Login(ctx *gin.Context) {
 		"token": token,
 	})
 }
-func isTelephoneExist(db *gorm.DB, telephone string) bool {
+func IsTelephoneExist(db *gorm.DB, telephone string) bool {
 	var user model.User
 	db.Where("phone_number = ?", telephone).First(&user)
 	if user.ID != 0 {

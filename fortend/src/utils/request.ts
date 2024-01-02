@@ -7,7 +7,7 @@ class HttpRequest {
     }
     getInsideConfig() {
         const config = {
-            baseURL: this.baseUrl,// 所有的请求地址前缀部分(没有后端请求不用写)  
+            baseURL: this.baseUrl, 
             timeout: 80000, // 请求超时时间(毫秒)
             withCredentials: true,// 异步请求携带cookie
             // headers: {
