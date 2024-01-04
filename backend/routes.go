@@ -16,5 +16,7 @@ func collectRoute(r *gin.Engine) *gin.Engine {
 	r.GET("/admin/addDoctor", Doctor.DoctorInit)
 	r.GET("/admin/findAllDoctors", Doctor.FindAllDoctor)
 	r.GET("/admin/deleteDoctor", Doctor.DeleteDoctor)
+	r.GET("/admin/findDoctor", Doctor.GetFindDoctor)
+	r.POST("/admin/modifyDoctor", Doctor.DoctorInfo)
 	return r
 }

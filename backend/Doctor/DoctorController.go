@@ -99,7 +99,7 @@ func FindAllDoctor(ctx *gin.Context) {
 			"dEmail":   doctor.DEmail,
 			"dPrice":   doctor.DPrice,
 			"dName":    doctor.DName,
-			"dState":   int(1), // 注意：需要为 Doctor 结构体添加 DState 字段
+			"dState":   doctor.DState, // 注意：需要为 Doctor 结构体添加 DState 字段
 			"dPost":    doctor.DPost,
 			"dCard":    doctor.DCard,
 			"dId":      doctor.DID,
@@ -132,6 +132,35 @@ func DeleteDoctor(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"success": "删除成功",
+	})
+}
+
+func GetFindDoctor(ctx *gin.Context) { //根据ID查询医生信息
+	DB := common.GetDB()
+	dId := ctx.Query("dId")
+	if dId == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "医生ID不能为空"})
+		return
+	}
+	var doctor model.Doctor
+	result := DB.Where("d_id=?", dId).First(&doctor)
+	if result.Error != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "msg": "未查询到该医生记录"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"dEamil":        doctor.DEmail,
+		"dPrice":        doctor.DPrice,
+		"dName":         doctor.DName,
+		"dState":        int(1),
+		"dPost":         doctor.DPost,
+		"dCard":         doctor.DCard,
+		"dId":           doctor.DID,
+		"dSection":      doctor.DSection,
+		"dGender":       doctor.DGender,
+		"dPhone":        doctor.DPhone,
+		"dIntroduction": doctor.DIntroduction,
 	})
 }
 

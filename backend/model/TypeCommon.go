@@ -17,6 +17,7 @@ type Doctor struct {
 	DCard         int    // 身份证号
 	DPrice        int    // 价格
 	DIntroduction string // 医生简介，例如：很厉害的医生
+	DState        int
 }
 
 type User struct {
