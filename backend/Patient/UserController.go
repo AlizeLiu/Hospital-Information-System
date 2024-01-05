@@ -7,6 +7,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"net/http"
+	"strconv"
+	"time"
 )
 
 func PatientRegister(ctx *gin.Context) {
@@ -103,6 +105,71 @@ func Login(ctx *gin.Context) {
 		"token": token,
 	})
 }
+
+func FindAllPatient(ctx *gin.Context) {
+	DB := common.GetDB()
+	pageNumberStr := ctx.Query("pageNumber")
+	sizeStr := ctx.Query("size")
+	query := ctx.Query("query")
+
+	pageNumber, _ := strconv.Atoi(pageNumberStr)
+	size, _ := strconv.Atoi(sizeStr)
+
+	offset := (pageNumber - 1) * size
+
+	if query == "" {
+		query = "%"
+	} else {
+		query = "%" + query + "%"
+	}
+
+	var total int64
+	var patients []model.User
+	DB.Model(&model.User{}).Where("username LIKE ?", query).
+		Count(&total).
+		Offset(offset).
+		Limit(size).
+		Find(&patients)
+
+	var transformedPatients []gin.H
+	for _, patient := range patients {
+		age, _ := CalculateAge(patient.Date_of_birth)
+		transformedPatients = append(transformedPatients, gin.H{
+			"pId":     patient.Account,
+			"pName":   patient.Username,
+			"pGender": patient.Gender,
+			"pAge":    age,
+			"pCard":   patient.Id_card_number,
+			"pPhone":  patient.Phone_number,
+			"pEmail":  patient.Email,
+			"pState":  int(1),
+		})
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"patients": transformedPatients,
+		"total":    total,
+	})
+
+}
+
+func DeletePatient(ctx *gin.Context) {
+	DB := common.GetDB()
+	account := ctx.Query("pId")
+	if account == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID不能为空"})
+		return
+	}
+	if err := DB.Where("account = ?", account).Delete(&model.User{}).Error; err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "删除失败"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": "删除成功",
+	})
+}
+
 func IsTelephoneExist(db *gorm.DB, telephone string) bool {
 	var user model.User
 	db.Where("phone_number = ?", telephone).First(&user)
@@ -110,4 +177,21 @@ func IsTelephoneExist(db *gorm.DB, telephone string) bool {
 		return true
 	}
 	return false
+}
+
+func CalculateAge(birthDateStr string) (int, error) {
+	layout := "2006-01-02"
+	birthDate, err := time.Parse(layout, birthDateStr)
+	if err != nil {
+		return 0, err
+	}
+
+	currentDate := time.Now()
+	years := currentDate.Year() - birthDate.Year()
+
+	if currentDate.Month() < birthDate.Month() || (currentDate.Month() == birthDate.Month() && currentDate.Day() < birthDate.Day()) {
+		years--
+	}
+
+	return years, nil
 }

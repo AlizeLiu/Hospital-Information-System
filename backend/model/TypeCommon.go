@@ -4,6 +4,8 @@ import (
 	"gorm.io/gorm"
 )
 
+var OrderNum = 0
+
 type Doctor struct {
 	gorm.Model
 	DID           string `gorm:"primaryKey"`
@@ -18,6 +20,8 @@ type Doctor struct {
 	DPrice        int    // 价格
 	DIntroduction string // 医生简介，例如：很厉害的医生
 	DState        int
+	DNum          int    `gorm:"default:30"`
+	DNonWorkDays  string `gorm:"type:varchar(255);"`
 }
 
 type User struct {

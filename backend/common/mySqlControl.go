@@ -38,3 +38,20 @@ func InitDB() *gorm.DB {
 func GetDB() *gorm.DB {
 	return DB
 }
+
+func UpdateDoctorNum(DB *gorm.DB) {
+	var doctors []model.Doctor
+	if err := DB.Find(&doctors).Error; err != nil {
+		fmt.Println("Failed to fetch doctors:", err)
+		return
+	}
+
+	// 更新每个医生的dNum
+	for _, doctor := range doctors {
+		doctor.DNum = 30
+		if err := DB.Save(&doctor).Error; err != nil {
+			fmt.Println("Failed to update doctor:", doctor.DID, err)
+		}
+	}
+	fmt.Println("Updated all doctors' dNum")
+}
