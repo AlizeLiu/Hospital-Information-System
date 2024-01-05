@@ -24,19 +24,9 @@
                 </el-button>
             </el-col>
             <el-col :span="1"></el-col>
-            <!-- 导入数据 -->
-            <el-col :span="2">
-                <el-upload class="upload-demo" action="doctor/uploadExcel" accept=".xlsx,.xls " :limit="1"
-                    :show-file-list="false" :on-progress="handleProgress" :on-exceed="handleExceed"
-                    :on-success="handleSuccess" :on-error="handleError" :file-list="fileList">
-                    <el-button size="small" type="success">一键导入</el-button>
-                </el-upload>
-            </el-col>
 
-            <el-col :span="2">
-                <el-button size="small" type="success" @click="exportDoctors">一键导出</el-button>
-            </el-col>
         </el-row>
+    
         <!-- 表格 -->
         <el-table :data="doctorData" stripe style="width: 100%" border>
             <el-table-column type="index" width="100" label="序号" />

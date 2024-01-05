@@ -4,10 +4,12 @@ import (
 	"backend/Doctor"
 	"backend/Patient"
 	"backend/Public"
+	"backend/Role"
 	"github.com/gin-gonic/gin"
 )
 
 func collectRoute(r *gin.Engine) *gin.Engine {
+	r.GET("/order/orderPeople", Public.OrderPeople)
 	r.GET("/patient/addPatient", Patient.PatientRegister)
 	r.GET("/admin/login", Patient.Login)
 	r.GET("/info", Public.GetLoginInf)
@@ -23,5 +25,8 @@ func collectRoute(r *gin.Engine) *gin.Engine {
 	r.GET("/patient/findDoctorBySection", Doctor.FindDoctorBySection)
 	r.GET("/arrange/findByTime", Doctor.FindByTime)
 	r.GET("/order/findOrderTime", Doctor.FindOrderTime)
+	r.GET("/patient/addOrder", Patient.AddOrder)
+	r.GET("/admin/addRole", Role.AddRole)
+	r.GET("/doctor/findOrderByNull", Doctor.OrderbyNull)
 	return r
 }

@@ -2,10 +2,22 @@ package model
 
 import (
 	"gorm.io/gorm"
+	"time"
 )
 
-var OrderNum = 0
+var OrderNum int
 
+type Drug struct {
+	gorm.Model
+}
+
+type Admin struct {
+	gorm.Model
+	RName     string `gorm:"primaryKey"`
+	RPassword string `gorm:"default:admin123"`
+	Role      string
+	Rstate    string
+}
 type Doctor struct {
 	gorm.Model
 	DID           string `gorm:"primaryKey"`
@@ -35,6 +47,17 @@ type User struct {
 	Phone_number   string `gorm:"varchar(11);not null;unique"`
 	Id_card_number string `gorm:"unique"`
 	Date_of_birth  string `gorm:"unique"`
+}
+
+type Registration struct {
+	gorm.Model
+	Account         string
+	Patient         User `gorm:"foreignKey:account"`
+	DID             string
+	Doctor          Doctor `gorm:"foreignKey:DID"`
+	OTime           time.Time
+	MedicineRecord  string
+	DiagnosisRecord string
 }
 
 type Meta struct {

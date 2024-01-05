@@ -133,18 +133,63 @@ func FindOrderTime(ctx *gin.Context) {
 	}
 	totalDNum := doctor.DNum
 
-	eachPart := int(math.Ceil(float64(totalDNum) / 5.0))
+	eachPart := int(math.Ceil(float64(totalDNum) / 6.0))
 	part1 := eachPart
 	part2 := eachPart
 	part3 := eachPart
 	part4 := eachPart
-	part5 := totalDNum - (eachPart * 4)
+	part5 := eachPart
+	part6 := totalDNum - (eachPart * 5)
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"eTOn": part1,
 		"nTOt": part2,
 		"tTOe": part3,
 		"fTOf": part4,
-		"sTOs": part5,
+		"fTOs": part5,
+		"sTOs": part6,
 	})
+}
+
+func OrderbyNull(ctx *gin.Context) {
+	DB := common.GetDB()
+
+	dId := ctx.Query("dId")
+	oStart := ctx.Query("oStart")
+
+	var registrations []model.Registration
+
+	// 查询当天的挂号信息
+	if err := DB.Where("d_id = ? AND DATE(o_start) = ?", dId, oStart).Find(&registrations).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "查询挂号信息失败"})
+		return
+	}
+
+	// 查询患者和医生信息
+	var response []gin.H
+	for _, reg := range registrations {
+		var patient model.User
+		var doctor model.Doctor
+
+		// 查询患者信息
+		if err := DB.Where("account = ?", reg.Account).First(&patient).Error; err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "查询患者信息失败"})
+			return
+		}
+
+		// 查询医生信
+		if err := DB.Where("d_id = ?", reg.DID).First(&doctor).Error; err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "查询医生信息失败"})
+			return
+		}
+
+		response = append(response, gin.H{
+			"registration_id": reg.ID,
+			"patient_name":    patient.Username,
+			"doctor_name":     doctor.DName,
+			"o_start":         reg.OTime,
+		})
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"registrations": response})
 }

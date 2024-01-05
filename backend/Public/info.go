@@ -58,3 +58,9 @@ func GetMenu(ctx *gin.Context) {
 		"meta":      newMeta,
 	})
 }
+
+func OrderPeople(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": model.OrderNum,
+	})
+}

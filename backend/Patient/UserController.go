@@ -77,23 +77,41 @@ func Login(ctx *gin.Context) {
 		return
 	}
 
-	// 查询用户
-	var user model.User
-	DB.Where("account= ?", account).First(&user)
-	if user.ID == 0 {
-		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"code": 422, "msg": "用户不存在"})
+	var user interface{} // 声明一个空接口以存储用户信息
+
+	switch role {
+	case "admin":
+		var admin model.Admin
+		if err := DB.Where("r_name = ?", account).First(&admin).Error; err != nil {
+			ctx.JSON(http.StatusUnprocessableEntity, gin.H{"code": 422, "msg": "用户不存在"})
+			return
+		}
+		user = admin
+
+	case "patient":
+		var patient model.User
+		if err := DB.Where("account = ?", account).First(&patient).Error; err != nil {
+			ctx.JSON(http.StatusUnprocessableEntity, gin.H{"code": 422, "msg": "用户不存在"})
+			return
+		}
+		user = patient
+
+	case "doctor":
+		var doctor model.Doctor
+		if err := DB.Where("d_id = ?", account).First(&doctor).Error; err != nil {
+			ctx.JSON(http.StatusUnprocessableEntity, gin.H{"code": 422, "msg": "用户不存在"})
+			return
+		}
+		user = doctor
+
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "无效的角色"})
 		return
 	}
 
 	// 检查密码
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(user.(model.User).Password), []byte(password)); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "密码错误"})
-		return
-	}
-
-	// 检查角色
-	if user.Role != role {
-		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"code": 422, "msg": "用户身份核验错误"})
 		return
 	}
 
