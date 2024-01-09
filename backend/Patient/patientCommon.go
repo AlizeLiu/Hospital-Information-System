@@ -5,7 +5,6 @@ import (
 	"backend/model"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"time"
 )
 
 func FindPatientById(ctx *gin.Context) {
@@ -33,14 +32,9 @@ func AddOrder(ctx *gin.Context) {
 	DB := common.GetDB()
 
 	pId := ctx.Query("pId")
-	oStartStr := ctx.Query("oStart")
+	oStart := ctx.Query("oStart")
 	dId := ctx.Query("dId")
 
-	oStart, err := time.Parse(time.RFC3339, oStartStr)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid time format"})
-		return
-	}
 	order := &model.Registration{
 		Account:         pId,
 		DID:             dId,

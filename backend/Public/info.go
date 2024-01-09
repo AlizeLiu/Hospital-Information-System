@@ -18,26 +18,42 @@ func GetLoginInf(ctx *gin.Context) {
 		return
 	}
 
-	var user model.User
-	if err := DB.Where("account = ?", account).First(&user).Error; err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"code": http.StatusNotFound, "msg": "用户不存在"})
-		return
-	}
-	var roleName string
+	var name string
+
 	switch role {
-	case "patient":
-		roleName = "患者"
-	case "doctor":
-		roleName = "医生"
 	case "admin":
-		roleName = "管理员"
+		var admin model.Admin
+		if err := DB.Where("r_name = ?", account).First(&admin).Error; err != nil {
+			ctx.JSON(http.StatusNotFound, gin.H{"code": http.StatusNotFound, "msg": "用户不存在"})
+			return
+		}
+		name = admin.RName
+
+	case "doctor":
+		var doctor model.Doctor
+		if err := DB.Where("d_id = ?", account).First(&doctor).Error; err != nil {
+			ctx.JSON(http.StatusNotFound, gin.H{"code": http.StatusNotFound, "msg": "用户不存在"})
+			return
+		}
+		name = doctor.DName
+
+	case "patient":
+		var patient model.User
+		if err := DB.Where("account = ?", account).First(&patient).Error; err != nil {
+			ctx.JSON(http.StatusNotFound, gin.H{"code": http.StatusNotFound, "msg": "用户不存在"})
+			return
+		}
+		name = patient.Username
+
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "msg": "无效的角色"})
+		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"username": user.Username,
-		"role":     roleName,
+		"username": name,
+		"role":     role,
 	})
-
 }
 
 func GetMenu(ctx *gin.Context) {

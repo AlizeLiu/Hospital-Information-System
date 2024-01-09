@@ -95,7 +95,7 @@ export const arrAdmin = [
         component: 'admin/PatientList',
         meta: {
             title: '患者管理',
-            requireAuth: true,  // 该路由项需要权限校验
+            //requireAuth: true,  // 该路由项需要权限校验
         },
     },
 ]

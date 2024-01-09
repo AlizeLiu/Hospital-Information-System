@@ -260,6 +260,7 @@ function submitLoginForm(formName) {
                 if (res.status != 200)
                     return ElMessage.error("用户名或密码错误");
                 setToken(res.data.token);
+                localStorage.setItem("userid", loginForm.id)
                 localStorage.setItem('role',role.value)
                 router.push({
                     path:'/',

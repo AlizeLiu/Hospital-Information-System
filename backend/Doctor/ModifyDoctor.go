@@ -155,12 +155,12 @@ func OrderbyNull(ctx *gin.Context) {
 	DB := common.GetDB()
 
 	dId := ctx.Query("dId")
-	oStart := ctx.Query("oStart")
+	//oStart := ctx.Query("oStart")
 
 	var registrations []model.Registration
 
 	// 查询当天的挂号信息
-	if err := DB.Where("d_id = ? AND DATE(o_start) = ?", dId, oStart).Find(&registrations).Error; err != nil {
+	if err := DB.Where("d_id = ? ", dId).Find(&registrations).Error; err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "查询挂号信息失败"})
 		return
 	}
@@ -183,13 +183,15 @@ func OrderbyNull(ctx *gin.Context) {
 			return
 		}
 
+		oStart := reg.CreatedAt.Format("2006-01-02 15:04")
 		response = append(response, gin.H{
-			"registration_id": reg.ID,
-			"patient_name":    patient.Username,
-			"doctor_name":     doctor.DName,
-			"o_start":         reg.OTime,
+			"oId":    reg.ID,
+			"pName":  patient.Username,
+			"dName":  doctor.DName,
+			"oStart": oStart,
+			"pId":    patient.Account,
 		})
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"registrations": response})
+	ctx.JSON(http.StatusOK, response)
 }

@@ -117,7 +117,7 @@ func Login(ctx *gin.Context) {
 			ctx.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "用户类型错误"})
 			return
 		}
-		if err := bcrypt.CompareHashAndPassword([]byte(admin.RPassword), []byte(password)); err != nil {
+		if admin.RPassword != password {
 			ctx.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "密码错误"})
 			return
 		}

@@ -21,25 +21,34 @@ func FindOrderByPid(ctx *gin.Context) {
 
 	var transformedRegs []gin.H
 	for _, registration := range registrations {
+		// 查询对应的patient和doctor信息
+		var patient model.User
+		if err := DB.Where("account = ?", registration.Account).First(&patient).Error; err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "查询病人信息失败"})
+			return
+		}
+
+		var doctor model.Doctor
+		if err := DB.Where("d_id = ?", registration.DID).First(&doctor).Error; err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "查询医生信息失败"})
+			return
+		}
+
+		oStart := registration.CreatedAt.Format("2006-01-02 15:04")
+
 		transformedRegs = append(transformedRegs, gin.H{
-			"oId":             registration.ID,
-			"dId":             registration.DID,
-			"pId":             registration.Account,
-			"pName":           registration.Patient.Username,
-			"oRecord":         registration.ORecord,
-			"oTime":           registration.OTime.Format("2006-01-02 15:04:05"), // 格式化时间
-			"medicineRecord":  registration.MedicineRecord,
-			"diagnosisRecord": registration.DiagnosisRecord,
-			"oTotalPrice":     registration.OTotalPrice,
-			"oCheckBuyData":   registration.OCheckBuyData,
-			"oDrugBuyData":    registration.ODrugBuyData,
-			"oState":          int(1),
+			"oId":         registration.ID,
+			"pName":       patient.Username,
+			"dName":       doctor.DName,
+			"oStart":      oStart,
+			"oTotalPrice": registration.OTotalPrice,
+			"oPrice":      registration.OTotalPrice,
+			"oStatePrice": doctor.DPrice,
+			"oState":      1,
 		})
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"registrations": transformedRegs,
-	})
+	ctx.JSON(http.StatusOK, transformedRegs)
 }
 
 func UpdatePrice(ctx *gin.Context) {

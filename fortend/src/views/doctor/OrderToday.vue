@@ -27,7 +27,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Check, Delete, Close, Search, Edit, List, ChatRound, Memo } from '@element-plus/icons-vue'
 import { getFindOrderByNull } from '@/api/doctor/orderToday.ts'
-let userId = ref(1)
+let userId = ref(localStorage.getItem("userid"))
 let userName = ref('dada')
 let today = ref('')
 let orderData = ref([

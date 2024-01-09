@@ -148,19 +148,34 @@ func GetFindDoctor(ctx *gin.Context) { //根据ID查询医生信息
 		ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusBadRequest, "msg": "未查询到该医生记录"})
 		return
 	}
+	data := struct {
+		DEmail        string `json:"dEmail"`
+		DPrice        int    `json:"dPrice"`
+		DName         string `json:"dName"`
+		DState        int    `json:"dState"`
+		DPost         string `json:"dPost"`
+		DCard         int    `json:"dCard"`
+		DId           string `json:"dId"`
+		DSection      string `json:"dSection"`
+		DGender       string `json:"dGender"`
+		DPhone        int    `json:"dPhone"`
+		DIntroduction string `json:"dIntroduction"`
+	}{
+		DEmail:        doctor.DEmail,
+		DPrice:        doctor.DPrice,
+		DName:         doctor.DName,
+		DState:        1,
+		DPost:         doctor.DPost,
+		DCard:         doctor.DCard,
+		DId:           doctor.DID,
+		DSection:      doctor.DSection,
+		DGender:       doctor.DGender,
+		DPhone:        doctor.DPhone,
+		DIntroduction: doctor.DIntroduction,
+	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"dEamil":        doctor.DEmail,
-		"dPrice":        doctor.DPrice,
-		"dName":         doctor.DName,
-		"dState":        int(1),
-		"dPost":         doctor.DPost,
-		"dCard":         doctor.DCard,
-		"dId":           doctor.DID,
-		"dSection":      doctor.DSection,
-		"dGender":       doctor.DGender,
-		"dPhone":        doctor.DPhone,
-		"dIntroduction": doctor.DIntroduction,
+		"data": data,
 	})
 }
 

@@ -2,7 +2,6 @@ package model
 
 import (
 	"gorm.io/gorm"
-	"time"
 )
 
 var OrderNum int
@@ -66,7 +65,7 @@ type Doctor struct {
 	DCard         int    // 身份证号
 	DPrice        int    // 价格
 	DIntroduction string // 医生简介，例如：很厉害的医生
-	DState        int
+	DState        int    `gorm:"default:1"`
 	DNum          int    `gorm:"default:30"`
 	DNonWorkDays  string `gorm:"type:varchar(255);"`
 }
@@ -91,7 +90,7 @@ type Registration struct {
 	DID             string
 	Doctor          Doctor `gorm:"foreignKey:DID"`
 	ORecord         string
-	OTime           time.Time
+	OTime           string
 	MedicineRecord  string
 	DiagnosisRecord string
 	ODrugs          string

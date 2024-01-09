@@ -49,13 +49,20 @@ func FindOrderByDid(ctx *gin.Context) {
 		// 获取患者名字
 		var user model.User
 		DB.Model(&model.User{}).Where("account = ?", registration.Account).First(&user)
+		oStart := registration.CreatedAt.Format("2006-01-02 15:04")
+		var oEnd string
+		if registration.OTotalPrice == "" || registration.OTotalPrice == "0" {
+			oEnd = "还未就诊" // 如果OTotalPrice为空或为零，则设置oEnd为空字符串
+		} else {
+			oEnd = registration.UpdatedAt.Format("2006-01-02 15:04")
+		}
 		transformedReg = append(transformedReg, gin.H{
 			"oId":           registration.ID,
 			"dId":           registration.DID,
 			"pId":           registration.Account,
 			"pName":         user.Username,
-			"oStart":        registration.OTime,
-			"oEnd":          registration.UpdatedAt,
+			"oStart":        oStart,
+			"oEnd":          oEnd,
 			"oRecored":      registration.ORecord,
 			"oDrugBuyData":  registration.ODrugBuyData,
 			"oCheckBuyData": registration.OCheckBuyData,
@@ -85,19 +92,27 @@ func FindByDid(ctx *gin.Context) {
 		return
 	}
 
+	// 初始化一个数组用于存储响应
+	var responseData []gin.H
+
 	// 检查UpdatedAt字段是否为空
 	var status string
 	var time string
-	if registration.UpdatedAt.IsZero() {
+	if registration.OTotalPrice == "" || registration.OTotalPrice == "0" {
 		status = "未就诊"
-		time = "1970-01-01 00:00:00" // 默认时间
+		time = registration.CreatedAt.Format("2006-01-02 15:04:05") // 默认时间
+		responseData = append(responseData, gin.H{
+			"status": status,
+			"time":   time,
+		})
 	} else {
 		status = "已就诊"
 		time = registration.UpdatedAt.Format("2006-01-02 15:04:05") // 格式化时间
+		responseData = append(responseData, gin.H{
+			"status": status,
+			"time":   time,
+		})
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"status": status,
-		"time":   time,
-	})
+	ctx.JSON(http.StatusOK, responseData)
 }

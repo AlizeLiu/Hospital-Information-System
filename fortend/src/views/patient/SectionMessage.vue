@@ -51,7 +51,7 @@
                 </el-table-column>
                 <el-table-column prop="dPost" label="职位">
                 </el-table-column>
-                <el-table-column prop="dSection" label="科室"></el-table-column>
+                <el-table-column prop="dSection" labelx="科室"></el-table-column>
                 <!-- <el-table-column prop="dIntroduction" label="简介">
                 </el-table-column> -->
                 <el-table-column prop="dPrice" label="挂号费用/元" width="100">
@@ -269,7 +269,7 @@ function orderSuccess() {
     orderDorm.value.validate((valid) => {
         if (valid) {
             getAddOrder({
-                pId: orderForm.pId,
+                pId: localStorage.getItem("userid"),
                 dId: orderForm.dId,
                 oStart:
                     orderForm.orderDate +

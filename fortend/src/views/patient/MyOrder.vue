@@ -117,7 +117,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { Check, Delete, Close, Search, Edit, List, ChatRound, Memo } from '@element-plus/icons-vue'
 import { getUpdatePrice, getFindDoctor, getFindOrderByPid, getFindOrderInfo } from '@/api/patient/myOrder.ts'
 let route = useRoute()
-let userId = ref(1)
+let userId = ref(localStorage.getItem("userid"))
 let orderData = ref([
     {
         oId: 214345,//挂号单号
