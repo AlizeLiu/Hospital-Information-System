@@ -62,9 +62,7 @@
                     <el-input v-model="registerForm.pName"></el-input>
                 </el-form-item>
                 <el-form-item label="出生日期" label-width="80px" prop="pBirthday">
-                    <el-date-picker v-model="registerForm.pBirthday" type="date" placeholder="选择日期"
-                        value-format="yyyy-MM-dd">
-                    </el-date-picker>
+                    <el-date-picker v-model="registerForm.pBirthday" type="date" placeholder="选择日期" :size="size"   format="YYYY-MM-DD" value-format="YYYY-MM-DD"/>
                 </el-form-item>
                 <el-form-item label="手机号" label-width="80px" prop="pPhone">
                     <el-input v-model="registerForm.pPhone"></el-input>

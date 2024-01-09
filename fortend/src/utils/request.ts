@@ -3,7 +3,7 @@ import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
 class HttpRequest {
     private readonly baseUrl: string;
     constructor() {
-        this.baseUrl = 'https://mock.apifox.com/m1/3542258-0-default'
+        this.baseUrl = '/api'
     }
     getInsideConfig() {
         const config = {

@@ -9,6 +9,61 @@ import (
 	"strconv"
 )
 
+func UpdateOrder(ctx *gin.Context) {
+	DB := common.GetDB()
+
+	oId := ctx.Query("oId")
+	pId := ctx.Query("pId")
+	dId := ctx.Query("dId")
+	oRecord := ctx.Query("oRecord")
+	oDrug := ctx.Query("oDrug")
+	oCheck := ctx.Query("oCheck")
+	oTotalPrice := ctx.Query("oTotalPrice")
+
+	var oDrugBuyData []model.FrontendDrug
+	if err := ctx.BindJSON(&oDrugBuyData); err != nil {
+		ctx.JSON(400, gin.H{"error": "Invalid request body"})
+		return
+	}
+
+	var oCheckBuyData []model.FrontendCheck
+	if err := ctx.BindJSON(&oCheckBuyData); err != nil {
+		ctx.JSON(400, gin.H{"error": "Invalid request body"})
+		return
+	}
+
+	// 使用转换函数将前端数据转换为数据模型
+	drugs := ConvertStringSliceToDrugSlice(oDrugBuyData)
+	checks := ConvertStringSliceToCheckSlice(oCheckBuyData)
+
+	// 现在，你可以将这些数据保存到数据库或进行其他操作
+
+	var existingOrder model.Registration
+	result := DB.Where("id = ?", oId).First(&existingOrder)
+	if result.Error != nil {
+		ctx.JSON(404, gin.H{"error": "Order not found"})
+		return
+	}
+
+	// 更新挂号记录
+	existingOrder.Account = pId
+	existingOrder.DID = dId
+	existingOrder.ORecord = oRecord
+	existingOrder.ODrugs = oDrug
+	existingOrder.OChecks = oCheck
+	existingOrder.OTotalPrice = oTotalPrice
+	existingOrder.OCheckBuyData = checks
+	existingOrder.ODrugBuyData = drugs
+
+	DB.Save(&existingOrder)
+
+	// 返回成功响应
+	ctx.JSON(200, gin.H{
+		"message": "Order successfully updated",
+		"oId":     existingOrder.ID,
+	})
+}
+
 func ReduceDrugs(ctx *gin.Context) {
 	DB := common.GetDB()
 

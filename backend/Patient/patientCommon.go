@@ -57,3 +57,9 @@ func AddOrder(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "挂号成功"})
 	model.OrderNum++
 }
+
+func BadPeople(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": int(0),
+	})
+}

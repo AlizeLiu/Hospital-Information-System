@@ -109,9 +109,43 @@ func Login(ctx *gin.Context) {
 		return
 	}
 
-	// 检查密码
-	if err := bcrypt.CompareHashAndPassword([]byte(user.(model.User).Password), []byte(password)); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "密码错误"})
+	// 根据角色进行密码验证
+	switch role {
+	case "admin":
+		admin, ok := user.(model.Admin)
+		if !ok {
+			ctx.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "用户类型错误"})
+			return
+		}
+		if err := bcrypt.CompareHashAndPassword([]byte(admin.RPassword), []byte(password)); err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "密码错误"})
+			return
+		}
+
+	case "patient":
+		patient, ok := user.(model.User)
+		if !ok {
+			ctx.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "用户类型错误"})
+			return
+		}
+		if err := bcrypt.CompareHashAndPassword([]byte(patient.Password), []byte(password)); err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "密码错误"})
+			return
+		}
+
+	case "doctor":
+		doctor, ok := user.(model.Doctor)
+		if !ok {
+			ctx.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "用户类型错误"})
+			return
+		}
+		if err := bcrypt.CompareHashAndPassword([]byte(doctor.DPassword), []byte(password)); err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "密码错误"})
+			return
+		}
+
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "无效的角色"})
 		return
 	}
 

@@ -9,7 +9,9 @@ import (
 )
 
 func collectRoute(r *gin.Engine) *gin.Engine {
+
 	r.GET("/order/orderPeople", Public.OrderPeople)
+	r.GET("/bed/bedPeople", Patient.BadPeople)
 	r.GET("/patient/addPatient", Patient.PatientRegister)
 	r.GET("/admin/login", Patient.Login)
 	r.GET("/info", Public.GetLoginInf)
@@ -33,5 +35,14 @@ func collectRoute(r *gin.Engine) *gin.Engine {
 	r.GET("/drug/addDrug", Admin.AddDrugs)
 	r.GET("/check/findCheck", Admin.AddChecks)
 	r.GET("/drug/reduceDrugNumber", Admin.ReduceDrugs)
+	r.GET("/order/updateOrder", Admin.UpdateOrder)
+	r.GET("/order/findOrderByDid", Doctor.FindOrderByDid)
+	r.GET("/order/findStarByDid", Doctor.FindByDid)
+	r.GET("/patient/findOrderByPid", Patient.FindOrderByPid)
+	r.GET("/order/updatePrice", Patient.UpdatePrice)
+	r.GET("/patient/findOrderInfo", Patient.FindOrderInfo)
+	r.GET("/admin/roleList", Admin.LoadRole)
+	r.GET("/admin/deleteRole", Admin.DeleteRole)
+
 	return r
 }

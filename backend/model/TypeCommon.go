@@ -7,6 +7,20 @@ import (
 
 var OrderNum int
 
+type FrontendDrug struct {
+	DrId     string `json:"drId"`
+	DrName   string `json:"drName"`
+	DrNumber int    `json:"drNumber"`
+	DrUnit   string `json:"drUnit"`
+	DrPrice  int    `json:"drPrice"`
+}
+
+type FrontendCheck struct {
+	ChId    string `json:"chId"`
+	ChName  string `json:"chName"`
+	ChPrice int    `json:"chPrice"`
+}
+
 type Check struct {
 	gorm.Model
 	ChId    string `gorm:"primaryKey"` //药物ID
@@ -23,12 +37,21 @@ type Drug struct {
 	DrPrice  int    //价格 反正测试环境随便编
 }
 
+type AdminResponse struct {
+	ID        uint   `json:"id"`
+	Role      string `json:"role"`
+	Rolename  string
+	CreatedAt string `json:"createdat"`
+	State     int    `json:"rstate"`
+}
+
 type Admin struct {
 	gorm.Model
 	RName     string `gorm:"primaryKey"`
 	RPassword string `gorm:"default:123456"`
 	Role      string
-	Rstate    string
+	Menu      []string `gorm:"type:json"`
+	Rstate    int      `gorm:"default:1"`
 }
 type Doctor struct {
 	gorm.Model
@@ -74,8 +97,9 @@ type Registration struct {
 	ODrugs          string
 	OChecks         string
 	OTotalPrice     string
-	OCheckBuyData   []string `gorm:"type:json"` //检查明细
-	ODrugBuyData    []string `gorm:"type:json"` //药物明细
+	OCheckBuyData   []Check `gorm:"type:json"` //检查明细
+	ODrugBuyData    []Drug  `gorm:"type:json"` //药物明细
+	OPriceState     int     `gorm:"default:0"`
 }
 
 type Meta struct {
