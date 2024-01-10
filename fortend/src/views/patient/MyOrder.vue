@@ -33,7 +33,8 @@
                 </el-table-column>
                 <el-table-column label="报告单" width="150" fixed="right">
                     <template #default="scope">
-                        <el-button type="success" style="font-size: 14px" @click="seeReport(scope.row.oId, scope.row.dName)">
+                        <el-button type="success" style="font-size: 14px"
+                            @click="seeReport(scope.row.oId, scope.row.dName)">
                             查看</el-button>
                     </template>
                 </el-table-column>
@@ -53,14 +54,21 @@
                 </div>
                 <h3 style="text-align: left;">
                     请选择支付方式：
+                    <el-radio-group v-model="payType">
+                        <el-radio :label="0">微信</el-radio>
+                        <el-radio :label="1">支付宝</el-radio>
+                        <el-radio :label="2">银行卡</el-radio>
+                    </el-radio-group>
                 </h3>
-                <div style="display: flex;">
+
+                <!-- <div style="display: flex;">
                     <div class="left">微信:
                         <img src="" alt="">
                     </div>
                     <div class="center">支付宝:<img src="" alt=""></div>
                     <div class="right">银行卡:<img src="" alt=""></div>
-                </div>
+
+                </div> -->
             </div>
             <template #footer>
                 <div class="dialog-footer">
@@ -115,7 +123,7 @@ import request from '@/utils/request.ts'
 import { useRouter, useRoute } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Check, Delete, Close, Search, Edit, List, ChatRound, Memo } from '@element-plus/icons-vue'
-import { getUpdatePrice, getFindDoctor, getFindOrderByPid, getFindOrderInfo } from '@/api/patient/myOrder.ts'
+import { getUpdatePrice, getFindDoctor, getFindOrderByPid, getFindOrderInfo, getFinishPrice } from '@/api/patient/myOrder.ts'
 let route = useRoute()
 let userId = ref(localStorage.getItem("userid"))
 let orderData = ref([
@@ -168,24 +176,25 @@ let formData = reactive([
         sDesc: "已出院"
     },
 ])
-//评价点击确认
-// function starClick() {
-//     console.log(star.value);
-//     console.log(dId.value);
-//     request
-//         .get("doctor/updateStar", {
-//             params: {
-//                 dId: dId.value,
-//                 dStar: star.value,
-//             },
-//         })
-//         .then((res) => {
-//             if (res.data.status !== 200)
-//                 return this.$message.error("评价失败");
-//             this.$message.success("谢谢您的评价");
-//             starVisible.value = false;
-//         });
-// }
+let priceoId = ref(0)
+let payType = ref(0)// 0:微信，1：支付宝，2：支付宝
+//缴费点击确认
+function starClick() {
+    // console.log(star.value);
+    // console.log(priceoId.value);
+    getFinishPrice({
+        oId: priceoId.value,
+    }).then((res) => {
+        console.log(res);
+        if (res.status !== 200) {
+            ElMessage.error("请求数据失败");
+            return;
+        }
+        ElMessage.success("缴费成功");
+        requestOrder();
+        starVisible.value = false;
+    });
+}
 //查看报告单
 function seeReport(id, name) {
     dName.value = name
@@ -202,7 +211,6 @@ function seeReport(id, name) {
 }
 //点击缴费按钮
 function priceClick(oId, dId) {
-    starVisible.value = true;
     getUpdatePrice({
         oId: oId,
     })
@@ -214,9 +222,11 @@ function priceClick(oId, dId) {
             // ElMessage.success("单号 " + oId + " 缴费成功！");
             dName.value = res.data.dName;
             sumPrice.value = res.data.sumPrice
+            priceoId.value = oId
             // starVisible.value = true;
             // requestOrder();
         });
+    starVisible.value = true;
 }
 //请求挂号信息
 function requestOrder() {

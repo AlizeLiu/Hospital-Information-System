@@ -51,7 +51,8 @@ func FindOrderByPid(ctx *gin.Context) {
 			"oTotalPrice": registration.OTotalPrice,
 			"oPrice":      registration.OTotalPrice,
 			"oStatePrice": doctor.DPrice,
-			"oState":      string(1),
+			"oState":      1,
+			"oPriceState": registration.OPriceState,
 		})
 	}
 
@@ -79,7 +80,7 @@ func UpdatePrice(ctx *gin.Context) {
 
 	// 查询医生信息
 	var doctor model.Doctor
-	if err := DB.Where("DID = ?", registration.DID).First(&doctor).Error; err != nil {
+	if err := DB.Where("d_id = ?", registration.DID).First(&doctor).Error; err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "查询医生信息失败"})
 		return
 	}
@@ -113,4 +114,24 @@ func FindOrderInfo(ctx *gin.Context) {
 		"oDrugBuyData":  registration.ODrugBuyData,
 		"oRecord":       registration.ORecord,
 	})
+}
+
+func FinishPrice(ctx *gin.Context) {
+	DB := common.GetDB()
+	oId := ctx.Query("oId")
+
+	var registration model.Registration
+	if err := DB.Where("id = ?", oId).First(&registration).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "查询挂号信息失败"})
+		return
+	}
+	registration.OPriceState = 1
+
+	if err := DB.Save(&registration).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "更新价格状态失败"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"oPriceState": 1})
+
 }

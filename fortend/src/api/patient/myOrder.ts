@@ -15,6 +15,13 @@ export function getFindDoctor(params: any) {
         params
     })
 }
+export function getFinishPrice(params: any) {
+    return http.request({
+        url: '/patient/finishPrice',
+        method: 'get',
+        params
+    })
+}
 //请求挂号信息
 export function getFindOrderByPid(params: any) {
     return http.request({

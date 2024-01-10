@@ -132,7 +132,7 @@
 
         <!-- 修改医生对话框 -->
         <el-dialog title="修改医生信息" v-model="modifyFormVisible">
-            <el-form v-model="modifyForm" ref="ruleForm">
+            <el-form :model="modifyForm" :rules="rules" ref="ruleForm2">
                 <el-form-item label="账号" label-width="80px" prop="dId">
                     <el-input v-model.number="modifyForm.dId" autocomplete="off" disabled></el-input>
                 </el-form-item>
@@ -183,7 +183,7 @@
                 <div class="dialog-footer">
                     <el-button @click="modifyFormVisible = false" style="font-size: 18px;"><i class="el-icon-close"
                             style="font-size: 20px;"></i> 取 消</el-button>
-                    <el-button type="primary" @click="modifyDoctor('ruleForm')" style="font-size: 18px;"><i
+                    <el-button type="primary" @click="modifyDoctor" style="font-size: 18px;"><i
                             class="el-icon-check" style="font-size: 20px;"></i> 确 定</el-button>
                 </div>
             </template>
@@ -226,6 +226,7 @@ let size = ref(8)
 let query = ref('')
 let total = ref(3)
 let ruleForm = ref()
+let ruleForm2 = ref()
 let doctorData = ref([]);
 let addFormVisible = ref(false)
 let addForm = reactive({ dPassword: 123456, dGender: "男", });
@@ -258,11 +259,11 @@ let sections = reactive([
 let rules = reactive({
     dId: [
         { required: true, message: "请输入账号", trigger: "blur" },
-        {
-            type: "number",
-            message: "账号必须数字类型",
-            trigger: "blur",
-        },
+        // {
+        //     type: "number",
+        //     message: "账号必须数字类型",
+        //     trigger: "blur",
+        // },
     ],
     dName: [
         { required: true, message: "请输入姓名", trigger: "blur" },
@@ -333,10 +334,11 @@ function handleExceed() {
     ElMessage.warning("当前限制选择 1 个文件");
 }
 //点击修改医生信息
-function modifyDoctor(formName) {
-    ruleForm.value.validate((valid) => {
+function modifyDoctor() {
+    console.log('modifyDoctor: ', ruleForm)
+    ruleForm2.value.validate((valid) => {
         if (valid) {
-            console.log(modifyForm.value);
+            console.log('valid success!')
             getModifyDoctor(modifyForm.value)
                 .then((res) => {
                     console.log(res);
@@ -400,7 +402,7 @@ function deleteDialog(id) {
         });
 }
 // 增加医生
-function addDoctor(formName) {
+function addDoctor() {
     ruleForm.value.validate((valid) => {
         if (valid) {
             getAddDoctor({

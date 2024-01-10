@@ -43,6 +43,6 @@ func collectRoute(r *gin.Engine) *gin.Engine {
 	r.GET("/patient/findOrderInfo", Patient.FindOrderInfo)
 	r.GET("/admin/roleList", Admin.LoadRole)
 	r.GET("/admin/deleteRole", Admin.DeleteRole)
-
+	r.GET("/patient/finishPrice", Patient.FinishPrice)
 	return r
 }

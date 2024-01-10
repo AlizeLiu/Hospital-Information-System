@@ -13,38 +13,54 @@ import (
 )
 
 func DoctorInfo(ctx *gin.Context) { //修改医生信息
+
 	DB := common.GetDB()
 
-	// 从请求体中获取医生ID
-	dId := ctx.PostForm("dId")
-
 	// 使用 DID 查询医生信息
-	var doctor model.Doctor
-	_ = ctx.Bind(&doctor)
-	if err := DB.First(&doctor, "d_id = ?", dId).Error; err != nil {
+	var doctor model.DoctorData
+	_ = ctx.ShouldBindJSON(&doctor)
+	// 从请求体中获取医生ID
+
+	dId := doctor.DID
+	var existingDoctor model.Doctor
+	if err := DB.First(&existingDoctor, "d_id = ?", dId).Error; err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Doctor not found"})
 		return
 	}
-	doctor.DGender = ctx.PostForm("dGender")
-	doctor.DName = ctx.PostForm("dName")
-	doctor.DPost = ctx.PostForm("dPost")
-	doctor.DSection = ctx.PostForm("dSection")
-	doctor.DPhone, _ = strconv.Atoi(ctx.PostForm("dPhone"))
-	doctor.DEmail = ctx.PostForm("dEmail")
-	dCard, _ := strconv.Atoi(ctx.PostForm("dCard"))
-	dPrice, _ := strconv.Atoi(ctx.PostForm("dPrice"))
-	doctor.DCard = dCard
-	doctor.DPrice = dPrice
-	doctor.DIntroduction = ctx.PostForm("dIntroduction")
-	dState, _ := strconv.Atoi(ctx.PostForm("dState"))
-	doctor.DState = dState
 
-	if err := DB.Save(&doctor).Error; err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Failed to update doctor"})
+	originalDoctor := existingDoctor
+
+	// Update doctor information
+	existingDoctor.DID = doctor.DID
+	existingDoctor.DGender = doctor.DGender
+	existingDoctor.DName = doctor.DName
+	existingDoctor.DPost = doctor.DPost
+	existingDoctor.DSection = doctor.DSection
+	existingDoctor.DIntroduction = doctor.DIntroduction
+	existingDoctor.DPhone = doctor.DPhone
+	existingDoctor.DEmail = doctor.DEmail
+
+	// Convert and update integer fields
+	existingDoctor.DCard, _ = strconv.Atoi(doctor.DCard)
+	existingDoctor.DState = doctor.DState
+	existingDoctor.DPrice, _ = strconv.Atoi(doctor.DPrice)
+
+	// Check which fields have been updated
+	updatedFields := make(map[string]interface{})
+	if existingDoctor.DID != originalDoctor.DID {
+		updatedFields["DID"] = existingDoctor.DID
+	}
+
+	if err := DB.Model(&originalDoctor).Updates(doctor).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, "22222")
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Doctor information updated successfully", "doctor": doctor})
+	ctx.JSON(200, &gin.H{
+		"code":  200,
+		"error": "Doctor not found"})
+	return
+
 }
 
 func FindDoctorBySection(ctx *gin.Context) {
