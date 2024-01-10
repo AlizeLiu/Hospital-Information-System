@@ -86,20 +86,20 @@
                     <el-input v-model="resultForm.dName" autocomplete="off" disabled></el-input>
                 </el-form-item>
                 <el-form-item label="药物:" label-width="100px">
-                    <el-table stripe border :data="resultForm.oDrugBuyData">
+                    <el-table stripe border :data="resultForm.drugs">
                         <el-table-column type="index" width="80" label="序号" />
                         <!-- <el-table-column label="编号" prop="drId"></el-table-column> -->
-                        <el-table-column label="名称" prop="drName"></el-table-column>
-                        <el-table-column label="单价/元" prop="drPrice"></el-table-column>
-                        <el-table-column label="数量" prop="drNum"></el-table-column>=
+                        <el-table-column label="名称" prop="DrName"></el-table-column>
+                        <el-table-column label="单价/元" prop="DrPrice"></el-table-column>
+                        <el-table-column label="数量" prop="DrNumber"></el-table-column>
                     </el-table>
                 </el-form-item>
                 <el-form-item label="检查项目:" label-width="100px" prop="oCheckBuyData">
-                    <el-table stripe border class="rigthTable" :data="resultForm.oCheckBuyData">
+                    <el-table stripe border class="rigthTable" :data="resultForm.checks">
                         <el-table-column type="index" width="80" label="序号" />
                         <!-- <el-table-column label="编号" prop="chId"></el-table-column> -->
-                        <el-table-column label="项目" prop="chName"></el-table-column>
-                        <el-table-column label="价格/元" prop="chPrice"></el-table-column>
+                        <el-table-column label="项目" prop="ChName"></el-table-column>
+                        <el-table-column label="价格/元" prop="ChPrice"></el-table-column>
                     </el-table>
                 </el-form-item>
                 <el-form-item label="医嘱:" label-width="100px" prop="oRecord">
@@ -180,21 +180,23 @@ let priceoId = ref(0)
 let payType = ref(0)// 0:微信，1：支付宝，2：支付宝
 //缴费点击确认
 function starClick() {
-    // console.log(star.value);
-    // console.log(priceoId.value);
     getFinishPrice({
         oId: priceoId.value,
     }).then((res) => {
         console.log(res);
         if (res.status !== 200) {
-            ElMessage.error("请求数据失败");
+            ElMessage.error("缴费失败：还未就诊");
             return;
         }
         ElMessage.success("缴费成功");
         requestOrder();
         starVisible.value = false;
+    }).catch(error => {
+        console.error("请求失败:", error);
+        ElMessage.error("请求失败，还未就诊");
     });
 }
+
 //查看报告单
 function seeReport(id, name) {
     dName.value = name
@@ -206,6 +208,10 @@ function seeReport(id, name) {
             ElMessage.error("请求数据失败");
             return;
         }
+        let data = res.data
+        data.drugs = res.data.oDrugBuyData ? JSON.parse(res.data.oDrugBuyData) : []
+        data.checks = res.data.oCheckBuyData ? JSON.parse(res.data.oCheckBuyData) : []
+        console.log('seeReport', res.data)
         resultForm.value = res.data;
     });
 }

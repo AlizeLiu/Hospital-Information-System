@@ -73,13 +73,13 @@ func LoadRole(ctx *gin.Context) {
 	})
 }
 
-func ConvertStringSliceToDrugSlice(data []model.FrontendDrug) []model.Drug {
+func ConvertStringSliceToDrugSlice(data []model.DrugBuyData) []model.Drug {
 	var drugs []model.Drug
 	for _, item := range data {
 		drug := model.Drug{
 			DrId:     item.DrId,
 			DrName:   item.DrName,
-			DrNumber: item.DrNumber,
+			DrNumber: item.DrNum,
 			DrPrice:  item.DrPrice,
 		}
 		drugs = append(drugs, drug)
@@ -87,7 +87,7 @@ func ConvertStringSliceToDrugSlice(data []model.FrontendDrug) []model.Drug {
 	return drugs
 }
 
-func ConvertStringSliceToCheckSlice(data []model.FrontendCheck) []model.Check {
+func ConvertStringSliceToCheckSlice(data []model.CheckData) []model.Check {
 	var checks []model.Check
 	for _, item := range data {
 		check := model.Check{

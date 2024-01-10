@@ -125,13 +125,18 @@ func FinishPrice(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "查询挂号信息失败"})
 		return
 	}
-	registration.OPriceState = 1
+	if registration.OTotalPrice == " " {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "还未就诊"})
+		return
+	} else {
+		registration.OPriceState = 1
+	}
 
-	if err := DB.Save(&registration).Error; err != nil {
+	if err := DB.Save(registration).Error; err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "更新价格状态失败"})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"oPriceState": 1})
+	ctx.JSON(http.StatusOK, gin.H{"oPriceState": registration.OPriceState})
 
 }

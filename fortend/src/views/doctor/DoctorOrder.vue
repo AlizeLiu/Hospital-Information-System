@@ -21,8 +21,8 @@
                 <el-table-column prop="oStart" label="挂号时间" width="190px"></el-table-column>
                 <el-table-column prop="oEnd" label="结束时间" width="180px"></el-table-column>
                 <el-table-column prop="oRecord" label="病因" width="400px"></el-table-column>
-                <el-table-column prop="oDrugBuyData" label="药物" width="180px"></el-table-column>
-                <el-table-column prop="oCheckBuyData" label="检查项目" width="180px"></el-table-column>
+                <el-table-column prop="drugs" label="药物" width="180px"></el-table-column>
+                <el-table-column prop="checks" label="检查项目" width="180px"></el-table-column>
                 <el-table-column prop="oTotalPrice" label="需交费用/元" width="80px"></el-table-column>
                 <el-table-column prop="oPriceState" label="缴费状态" width="100px">
                     <template #default="scope">
@@ -171,10 +171,24 @@ function requestOrders() {
         query: query.value,
     })
         .then((res) => {
-            console.log(res);
+            let orders = res.data.orders || []
+            orders.forEach(o => {
+                if(o.oDrugBuyData) {
+                    let drugs = JSON.parse(o.oDrugBuyData) || []
+                    let drugStr = ''
+                    drugs.forEach(drug => drugStr += `${drug.DrName}, `) 
+                    o.drugs = drugStr.slice(0, -1)
+                }
+                if(o.oCheckBuyData) {
+                    let checks = JSON.parse(o.oCheckBuyData) || []
+                    let checkStr = ''
+                    checks.forEach(check => checkStr += `${check.ChName}, `)
+                    o.checks = checkStr.slice(0, -1)
+                }
+            });
             if (res.status !== 200)
                 ElMessage.error("请求数据失败");
-            orderData.value = res.data.orders;
+            orderData.value = orders;
             // total.value = res.data.total;
         });
 }

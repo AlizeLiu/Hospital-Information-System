@@ -1,6 +1,8 @@
 package model
 
 import (
+	"database/sql/driver"
+	"encoding/json"
 	"gorm.io/gorm"
 )
 
@@ -26,6 +28,16 @@ type Check struct {
 	ChPrice int //价格 反正测试环境随便编
 }
 
+func (b Check) Value() (driver.Value, error) {
+	d, err := json.Marshal(b)
+	return string(d), err
+}
+
+// 注意，这里的接收器是指针类型，否则无法把数据从数据库读到结构体
+func (b *Check) Scan(v interface{}) error {
+	return json.Unmarshal(v.([]byte), b)
+}
+
 type Drug struct {
 	gorm.Model
 	DrId     string `gorm:"primaryKey"` //药物ID
@@ -33,6 +45,16 @@ type Drug struct {
 	DrNumber int    //库存
 	DrUnit   string //单位（盒之类的）
 	DrPrice  int    //价格 反正测试环境随便编
+}
+
+func (b Drug) Value() (driver.Value, error) {
+	d, err := json.Marshal(b)
+	return string(d), err
+}
+
+// 注意，这里的接收器是指针类型，否则无法把数据从数据库读到结构体
+func (b *Drug) Scan(v interface{}) error {
+	return json.Unmarshal(v.([]byte), b)
 }
 
 type AdminResponse struct {
@@ -95,9 +117,11 @@ type Registration struct {
 	ODrugs          string
 	OChecks         string
 	OTotalPrice     string
-	OCheckBuyData   []Check `gorm:"type:json"` //检查明细
-	ODrugBuyData    []Drug  `gorm:"type:json"` //药物明细
-	OPriceState     int     `gorm:"default:0"`
+	//OCheckBuyData   []Check `gorm:"type:json"` //检查明细
+	OCheckBuyData string `gorm:"type:json"` //检查明细
+	ODrugBuyData  string `gorm:"type:json"` //药物明细
+	//ODrugBuyData    []Drug  `gorm:"type:json"` //药物明细
+	OPriceState int `gorm:"default:0"`
 }
 
 type Meta struct {

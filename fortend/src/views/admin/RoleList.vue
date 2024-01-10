@@ -136,7 +136,7 @@ function deleteMenu(id) {
 }
 //删除对话框
 function deleteDialog(id) {
-    ElMessageBox.confirm("此操作将删除该患者信息, 是否继续?", "提示", {
+    ElMessageBox.confirm("此操作将删除该人员信息, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",

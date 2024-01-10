@@ -58,7 +58,7 @@ func DoctorInfo(ctx *gin.Context) { //修改医生信息
 
 	ctx.JSON(200, &gin.H{
 		"code":  200,
-		"error": "Doctor not found"})
+		"error": "11111"})
 	return
 
 }

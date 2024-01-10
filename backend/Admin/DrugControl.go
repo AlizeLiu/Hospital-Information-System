@@ -3,6 +3,7 @@ package Admin
 import (
 	"backend/common"
 	"backend/model"
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -24,8 +25,10 @@ func UpdateOrder(ctx *gin.Context) {
 	oDrugNum := updateOrderParams.ODrug
 	oCheckNum := updateOrderParams.OCheck
 	oTotalPriceNum := updateOrderParams.OTotalPrice
+	oDrugBuyData := updateOrderParams.ODrugBuyData
+	oCheckBuyData := updateOrderParams.OCheckBuyData
 
-	var oDrugBuyData []model.FrontendDrug
+	/*var oDrugBuyData []model.FrontendDrug
 	if err := ctx.BindQuery(&oDrugBuyData); err != nil {
 		ctx.JSON(400, gin.H{"error": "Invalid request body"})
 		return
@@ -36,7 +39,7 @@ func UpdateOrder(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": "Invalid request body"})
 		return
 	}
-
+	*/
 	// 使用转换函数将前端数据转换为数据模型
 	drugs := ConvertStringSliceToDrugSlice(oDrugBuyData)
 	checks := ConvertStringSliceToCheckSlice(oCheckBuyData)
@@ -59,19 +62,24 @@ func UpdateOrder(ctx *gin.Context) {
 	existingOrder.ODrugs = oDrug
 	existingOrder.OChecks = oCheck
 	existingOrder.OTotalPrice = oTotalPrice
-	existingOrder.OCheckBuyData = checks
-	existingOrder.ODrugBuyData = drugs
+	//existingOrder.OCheckBuyData = checks
+	//existingOrder.ODrugBuyData = drugs
+	existingOrder.OCheckBuyData = ""
+	existingOrder.ODrugBuyData = ""
+	existingOrder.OPriceState = 0
 
-	var fullDrugs []model.Drug
+	/*var fullDrugs []model.Drug
 	for _, drugName := range drugs {
 		var fullDrug model.Drug
 		if err := DB.Where("dr_name = ?", drugName.DrName).First(&fullDrug).Error; err != nil {
 			ctx.JSON(400, gin.H{"error": "Drug not found in database"})
 			return
 		}
+		fullDrug.DrNumber = 1
 		fullDrugs = append(fullDrugs, fullDrug)
-	}
-	existingOrder.ODrugBuyData = fullDrugs
+	}*/
+	fullDrugs1, _ := json.Marshal(drugs)
+	existingOrder.ODrugBuyData = string(fullDrugs1)
 
 	// 根据ChName查询数据库获取完整的Check记录
 	var fullChecks []model.Check
@@ -83,11 +91,12 @@ func UpdateOrder(ctx *gin.Context) {
 		}
 		fullChecks = append(fullChecks, fullCheck)
 	}
-	existingOrder.OCheckBuyData = fullChecks
+	fullChecks1, _ := json.Marshal(fullChecks)
+	existingOrder.OCheckBuyData = string(fullChecks1)
 
-	DB.Save(&existingOrder)
+	DB.Save(existingOrder)
 
-	// 返回成功响应
+	// 返回成功响应x
 	ctx.JSON(200, gin.H{
 		"success": "Order successfully updated",
 	})

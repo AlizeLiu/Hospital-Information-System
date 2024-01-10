@@ -56,6 +56,7 @@ func FindOrderByDid(ctx *gin.Context) {
 		} else {
 			oEnd = registration.UpdatedAt.Format("2006-01-02 15:04")
 		}
+
 		transformedReg = append(transformedReg, gin.H{
 			"oId":           registration.ID,
 			"dId":           registration.DID,
