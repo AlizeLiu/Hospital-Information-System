@@ -58,7 +58,7 @@
             </el-table-column>
             <el-table-column label="操作" width="200" fixed="right">
                 <template #default="scope">
-                    <el-button style="font-size: 14px;" type="success" @click="modifyDialog(scope.row.dId)"
+                    <el-button style="font-size: 14px;" type="success" @click="modifyDialog(scope.row)"
                         :icon="Edit"></el-button>
                     <el-button style="font-size: 14px;" type="danger" @click="deleteDialog(scope.row.dId)"
                         :icon="Delete"></el-button>
@@ -132,7 +132,7 @@
 
         <!-- 修改医生对话框 -->
         <el-dialog title="修改医生信息" v-model="modifyFormVisible">
-            <el-form model="modifyForm" ref="ruleForm">
+            <el-form v-model="modifyForm" ref="ruleForm">
                 <el-form-item label="账号" label-width="80px" prop="dId">
                     <el-input v-model.number="modifyForm.dId" autocomplete="off" disabled></el-input>
                 </el-form-item>
@@ -226,34 +226,7 @@ let size = ref(8)
 let query = ref('')
 let total = ref(3)
 let ruleForm = ref()
-let doctorData = reactive([
-    {
-        dId: 1,
-        dName: '张',
-        dGender: '男',//0 男，1女
-        dPost: '普通医生',
-        dSection: '消化科',
-        dCard: '000001',
-        dPhone: '13512341234',
-        dEmail: '13456@qq.com',
-        dAvgStar: '1',
-        dPrice: 15,
-        dState: 1,
-    },
-    {
-        dId: 2,
-        dName: '李',
-        dGender: '女',//0 男，1女
-        dPost: '普通医生',
-        dSection: '内科',
-        dCard: '000001',
-        dPhone: '13512341234',
-        dEmail: '13456@qq.com',
-        dAvgStar: '1',
-        dPrice: 15,
-        dState: 1,
-    },
-]);
+let doctorData = ref([]);
 let addFormVisible = ref(false)
 let addForm = reactive({ dPassword: 123456, dGender: "男", });
 let modifyFormVisible = ref(false)
@@ -363,21 +336,8 @@ function handleExceed() {
 function modifyDoctor(formName) {
     ruleForm.value.validate((valid) => {
         if (valid) {
-            console.log(modifyForm);
-
-            getModifyDoctor({
-                dId: modifyForm.dId,
-                dGender: modifyForm.dGender,
-                dName: modifyForm.dName,
-                dPost: modifyForm.dPost,
-                dSection: modifyForm.dSection,
-                dPhone: modifyForm.dPhone,
-                dEmail: modifyForm.dEmail,
-                dCard: modifyForm.dCard,
-                dPrice: modifyForm.dPrice,
-                dIntroduction: modifyForm.dIntroduction,
-                dState: modifyForm.dState,
-            })
+            console.log(modifyForm.value);
+            getModifyDoctor(modifyForm.value)
                 .then((res) => {
                     console.log(res);
                     if (res.status !== 200)
@@ -394,17 +354,19 @@ function modifyDoctor(formName) {
     });
 }
 //打开修改对话框
-function modifyDialog(id) {
-    getFindDoctor({
-        dId: id,
-    })
-        .then((res) => {
-            if (res.status !== 200)
-                ElMessage.error("请求数据失败");
-            modifyForm.value = res.data.data;
-            modifyFormVisible.value = true;
-            console.log(res);
-        });
+function modifyDialog(row) {
+    modifyForm.value = row;
+    modifyFormVisible.value = true;
+    // getFindDoctor({
+    //     dId: id,
+    // })
+    //     .then((res) => {
+    //         if (res.status !== 200)
+    //             ElMessage.error("请求数据失败");
+    //         modifyForm.value = res.data.data;
+    //         modifyFormVisible.value = true;
+    //         console.log(res);
+    //     });
 }
 //删除医生操作
 function deleteDoctor(id) {
@@ -491,8 +453,8 @@ function requestDoctors() {
         query: query.value,
     })
         .then((res) => {
-            console.log(res);
-            doctorData = res.data.doctors;
+            console.log(res.data.doctors);
+            doctorData.value = res.data.doctors;
             total.value = res.data.total;
             // console.log(res.data.data.map((item) => item.doctor));
             // console.log(res.data.data.doctors.map((item) => item.dId));

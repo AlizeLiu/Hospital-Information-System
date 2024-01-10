@@ -96,17 +96,18 @@ func FindAllDoctor(ctx *gin.Context) {
 	var transformedDoctors []gin.H
 	for _, doctor := range doctors {
 		transformedDoctors = append(transformedDoctors, gin.H{
-			"dEmail":   doctor.DEmail,
-			"dPrice":   doctor.DPrice,
-			"dName":    doctor.DName,
-			"dState":   doctor.DState, // 注意：需要为 Doctor 结构体添加 DState 字段
-			"dPost":    doctor.DPost,
-			"dCard":    doctor.DCard,
-			"dId":      doctor.DID,
-			"dAvgStar": int(5), // 注意：需要为 Doctor 结构体添加 DAvgStar 字段
-			"dSection": doctor.DSection,
-			"dGender":  doctor.DGender,
-			"dPhone":   doctor.DPhone,
+			"dEmail":        doctor.DEmail,
+			"dPrice":        doctor.DPrice,
+			"dName":         doctor.DName,
+			"dState":        doctor.DState, // 注意：需要为 Doctor 结构体添加 DState 字段
+			"dPost":         doctor.DPost,
+			"dCard":         doctor.DCard,
+			"dId":           doctor.DID,
+			"dAvgStar":      int(5), // 注意：需要为 Doctor 结构体添加 DAvgStar 字段
+			"dSection":      doctor.DSection,
+			"dGender":       doctor.DGender,
+			"dPhone":        doctor.DPhone,
+			"dIntroduction": doctor.DIntroduction,
 		})
 	}
 

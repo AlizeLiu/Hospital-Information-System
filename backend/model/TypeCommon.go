@@ -10,7 +10,6 @@ type FrontendDrug struct {
 	DrId     string `json:"drId"`
 	DrName   string `json:"drName"`
 	DrNumber int    `json:"drNumber"`
-	DrUnit   string `json:"drUnit"`
 	DrPrice  int    `json:"drPrice"`
 }
 
@@ -54,7 +53,7 @@ type Admin struct {
 }
 type Doctor struct {
 	gorm.Model
-	DID           string `gorm:"primaryKey"`
+	DID           string `gorm:"primaryKey" json:"DId"`
 	DGender       string // 例如：男、女等
 	DPassword     string
 	DName         string

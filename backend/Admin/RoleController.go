@@ -80,7 +80,6 @@ func ConvertStringSliceToDrugSlice(data []model.FrontendDrug) []model.Drug {
 			DrId:     item.DrId,
 			DrName:   item.DrName,
 			DrNumber: item.DrNumber,
-			DrUnit:   item.DrUnit,
 			DrPrice:  item.DrPrice,
 		}
 		drugs = append(drugs, drug)

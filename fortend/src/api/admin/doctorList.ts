@@ -4,7 +4,7 @@ export function getModifyDoctor(params: any) {
     return http.request({
         url: '/admin/modifyDoctor',
         method: 'post',
-        params
+        data: params
     })
 }
 // 根据id查询医生信息

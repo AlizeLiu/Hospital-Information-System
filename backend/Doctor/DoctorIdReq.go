@@ -63,12 +63,12 @@ func FindOrderByDid(ctx *gin.Context) {
 			"pName":         user.Username,
 			"oStart":        oStart,
 			"oEnd":          oEnd,
-			"oRecored":      registration.ORecord,
+			"oRecord":       registration.ORecord,
 			"oDrugBuyData":  registration.ODrugBuyData,
 			"oCheckBuyData": registration.OCheckBuyData,
 			"oTotalPrice":   registration.OTotalPrice,
 			"oPriceState":   registration.OPriceState,
-			"oState":        int(1),
+			"oState":        1,
 		})
 	}
 

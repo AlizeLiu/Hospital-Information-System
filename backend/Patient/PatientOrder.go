@@ -35,16 +35,23 @@ func FindOrderByPid(ctx *gin.Context) {
 		}
 
 		oStart := registration.CreatedAt.Format("2006-01-02 15:04")
+		var oEnd string
+		if registration.OTotalPrice == "" || registration.OTotalPrice == "0" {
+			oEnd = "还未就诊" // 如果OTotalPrice为空或为零，则设置oEnd为空字符串
+		} else {
+			oEnd = registration.UpdatedAt.Format("2006-01-02 15:04")
+		}
 
 		transformedRegs = append(transformedRegs, gin.H{
 			"oId":         registration.ID,
 			"pName":       patient.Username,
 			"dName":       doctor.DName,
+			"oEnd":        oEnd,
 			"oStart":      oStart,
 			"oTotalPrice": registration.OTotalPrice,
 			"oPrice":      registration.OTotalPrice,
 			"oStatePrice": doctor.DPrice,
-			"oState":      1,
+			"oState":      string(1),
 		})
 	}
 
@@ -94,9 +101,14 @@ func FindOrderInfo(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "查询挂号信息失败"})
 		return
 	}
+	var doctor model.Doctor
+	if err := DB.Where("d_id = ?", registration.DID).First(&doctor).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "查询医生信息失败"})
+		return
+	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"dName":         registration.Doctor.DName,
+		"dName":         doctor.DName,
 		"oCheckBuyData": registration.OCheckBuyData,
 		"oDrugBuyData":  registration.ODrugBuyData,
 		"oRecord":       registration.ORecord,

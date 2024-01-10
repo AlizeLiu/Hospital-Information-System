@@ -11,8 +11,8 @@ export function getReduceDrugNumber(params: any) {
 export function getUpdateOrder(params: any) {
     return http.request({
         url: '/order/updateOrder',
-        method: 'get',
-        params
+        method: 'post',
+        data: params
     })
 }
 //检查列表点击增加按钮

@@ -20,7 +20,8 @@ func DoctorInfo(ctx *gin.Context) { //修改医生信息
 
 	// 使用 DID 查询医生信息
 	var doctor model.Doctor
-	if err := DB.First(&doctor, "DID = ?", dId).Error; err != nil {
+	_ = ctx.Bind(&doctor)
+	if err := DB.First(&doctor, "d_id = ?", dId).Error; err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Doctor not found"})
 		return
 	}

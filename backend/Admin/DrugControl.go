@@ -12,22 +12,27 @@ import (
 func UpdateOrder(ctx *gin.Context) {
 	DB := common.GetDB()
 
-	oId := ctx.Query("oId")
-	pId := ctx.Query("pId")
-	dId := ctx.Query("dId")
-	oRecord := ctx.Query("oRecord")
-	oDrug := ctx.Query("oDrug")
-	oCheck := ctx.Query("oCheck")
-	oTotalPrice := ctx.Query("oTotalPrice")
+	var updateOrderParams model.Order
+	if err := ctx.ShouldBindJSON(&updateOrderParams); err != nil {
+
+	}
+
+	oId := updateOrderParams.OId
+	pId := updateOrderParams.PId
+	//dId := ctx.Query("dId")
+	oRecord := updateOrderParams.ORecord
+	oDrugNum := updateOrderParams.ODrug
+	oCheckNum := updateOrderParams.OCheck
+	oTotalPriceNum := updateOrderParams.OTotalPrice
 
 	var oDrugBuyData []model.FrontendDrug
-	if err := ctx.BindJSON(&oDrugBuyData); err != nil {
+	if err := ctx.BindQuery(&oDrugBuyData); err != nil {
 		ctx.JSON(400, gin.H{"error": "Invalid request body"})
 		return
 	}
 
 	var oCheckBuyData []model.FrontendCheck
-	if err := ctx.BindJSON(&oCheckBuyData); err != nil {
+	if err := ctx.ShouldBindQuery(&oCheckBuyData); err != nil {
 		ctx.JSON(400, gin.H{"error": "Invalid request body"})
 		return
 	}
@@ -36,7 +41,9 @@ func UpdateOrder(ctx *gin.Context) {
 	drugs := ConvertStringSliceToDrugSlice(oDrugBuyData)
 	checks := ConvertStringSliceToCheckSlice(oCheckBuyData)
 
-	// 现在，你可以将这些数据保存到数据库或进行其他操作
+	oDrug := strconv.Itoa(oDrugNum)
+	oCheck := strconv.Itoa(oCheckNum)
+	oTotalPrice := strconv.Itoa(oTotalPriceNum)
 
 	var existingOrder model.Registration
 	result := DB.Where("id = ?", oId).First(&existingOrder)
@@ -47,7 +54,7 @@ func UpdateOrder(ctx *gin.Context) {
 
 	// 更新挂号记录
 	existingOrder.Account = pId
-	existingOrder.DID = dId
+	//existingOrder.DID = dId
 	existingOrder.ORecord = oRecord
 	existingOrder.ODrugs = oDrug
 	existingOrder.OChecks = oCheck
@@ -55,12 +62,34 @@ func UpdateOrder(ctx *gin.Context) {
 	existingOrder.OCheckBuyData = checks
 	existingOrder.ODrugBuyData = drugs
 
+	var fullDrugs []model.Drug
+	for _, drugName := range drugs {
+		var fullDrug model.Drug
+		if err := DB.Where("dr_name = ?", drugName.DrName).First(&fullDrug).Error; err != nil {
+			ctx.JSON(400, gin.H{"error": "Drug not found in database"})
+			return
+		}
+		fullDrugs = append(fullDrugs, fullDrug)
+	}
+	existingOrder.ODrugBuyData = fullDrugs
+
+	// 根据ChName查询数据库获取完整的Check记录
+	var fullChecks []model.Check
+	for _, checkName := range checks {
+		var fullCheck model.Check
+		if err := DB.Where("ch_name = ?", checkName.ChName).First(&fullCheck).Error; err != nil {
+			ctx.JSON(400, gin.H{"error": "Check not found in database"})
+			return
+		}
+		fullChecks = append(fullChecks, fullCheck)
+	}
+	existingOrder.OCheckBuyData = fullChecks
+
 	DB.Save(&existingOrder)
 
 	// 返回成功响应
 	ctx.JSON(200, gin.H{
-		"message": "Order successfully updated",
-		"oId":     existingOrder.ID,
+		"success": "Order successfully updated",
 	})
 }
 
