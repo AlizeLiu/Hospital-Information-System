@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"math"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -29,27 +28,27 @@ func DoctorInfo(ctx *gin.Context) { //修改医生信息
 	}
 
 	originalDoctor := existingDoctor
+	originalDoctor.DState = doctor.DState
+	/*	// Update doctor information
+		existingDoctor.DID = doctor.DID
+		existingDoctor.DGender = doctor.DGender
+		existingDoctor.DName = doctor.DName
+		existingDoctor.DPost = doctor.DPost
+		existingDoctor.DSection = doctor.DSection
+		existingDoctor.DIntroduction = doctor.DIntroduction
+		existingDoctor.DPhone = doctor.DPhone
+		existingDoctor.DEmail = doctor.DEmail
 
-	// Update doctor information
-	existingDoctor.DID = doctor.DID
-	existingDoctor.DGender = doctor.DGender
-	existingDoctor.DName = doctor.DName
-	existingDoctor.DPost = doctor.DPost
-	existingDoctor.DSection = doctor.DSection
-	existingDoctor.DIntroduction = doctor.DIntroduction
-	existingDoctor.DPhone = doctor.DPhone
-	existingDoctor.DEmail = doctor.DEmail
-
-	// Convert and update integer fields
-	existingDoctor.DCard, _ = strconv.Atoi(doctor.DCard)
-	existingDoctor.DState = doctor.DState
-	existingDoctor.DPrice, _ = strconv.Atoi(doctor.DPrice)
-
+		// Convert and update integer fields
+		existingDoctor.DCard, _ = strconv.Atoi(doctor.DCard)
+		existingDoctor.DState = doctor.DState
+		existingDoctor.DPrice, _ = strconv.Atoi(doctor.DPrice)
+	*/
 	// Check which fields have been updated
-	updatedFields := make(map[string]interface{})
-	if existingDoctor.DID != originalDoctor.DID {
-		updatedFields["DID"] = existingDoctor.DID
-	}
+	/*	updatedFields := make(map[string]interface{})
+		if existingDoctor.DID != originalDoctor.DID {
+			updatedFields["DID"] = existingDoctor.DID
+		}*/
 
 	if err := DB.Model(&originalDoctor).Updates(doctor).Error; err != nil {
 		ctx.JSON(http.StatusInternalServerError, "22222")

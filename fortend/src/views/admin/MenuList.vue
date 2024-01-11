@@ -108,7 +108,7 @@ let menuData = ref([
         component: 'admin/PatientList',
         meta: {
             title: '患者信息管理',
-            requireAuth: true,  // 该路由项需要权限校验
+            requireAuth:true,  // 该路由项需要权限校验
         },
         mId: 1,
     },

@@ -41,6 +41,8 @@ func AddOrder(ctx *gin.Context) {
 		OTime:           oStart,
 		MedicineRecord:  "",
 		DiagnosisRecord: "",
+		OCheckBuyData:   "1",
+		ODrugBuyData:    "1",
 	}
 
 	if err := DB.Create(order).Error; err != nil {

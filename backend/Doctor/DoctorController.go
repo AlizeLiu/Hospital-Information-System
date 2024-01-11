@@ -99,7 +99,7 @@ func FindAllDoctor(ctx *gin.Context) {
 			"dEmail":        doctor.DEmail,
 			"dPrice":        doctor.DPrice,
 			"dName":         doctor.DName,
-			"dState":        doctor.DState, // 注意：需要为 Doctor 结构体添加 DState 字段
+			"dState":        doctor.DState,
 			"dPost":         doctor.DPost,
 			"dCard":         doctor.DCard,
 			"dId":           doctor.DID,
