@@ -43,7 +43,7 @@ func GetDB() *gorm.DB {
 	return DB
 }
 
-func UpdateDoctorNum(DB *gorm.DB) {
+/*func UpdateDoctorNum(DB *gorm.DB) {
 	var doctors []model.Doctor
 	if err := DB.Find(&doctors).Error; err != nil {
 		fmt.Println("Failed to fetch doctors:", err)
@@ -57,5 +57,5 @@ func UpdateDoctorNum(DB *gorm.DB) {
 			fmt.Println("Failed to update doctor:", doctor.DID, err)
 		}
 	}
-	fmt.Println("Updated all doctors' dNum")
-}
+	//fmt.Println("Updated all doctors' dNum")
+}*/
