@@ -20,4 +20,4 @@ ENV TZ Asia/Shanghai
 
 WORKDIR /app
 
-CMD ["./main"]
+CMD ["main"]

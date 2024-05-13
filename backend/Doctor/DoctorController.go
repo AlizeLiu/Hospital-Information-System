@@ -37,14 +37,14 @@ func DoctorInit(ctx *gin.Context) {
 		return
 	}
 	if IsTelephoneExist(DB, dPhoneStr) {
-		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"code": 422, "msg": "手机号已经被注册"})
+		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"code": http.StatusUnprocessableEntity, "msg": "手机号已经被注册"})
 		return
 	}
 
 	// 密码加密
 	hasedPassword, err := bcrypt.GenerateFromPassword([]byte(dPassword), bcrypt.DefaultCost)
 	if err != nil {
-		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"code": 500, "msg": "加密错误"})
+		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"code": http.StatusInternalServerError, "msg": "加密错误"})
 		return
 	}
 	dPhone, err := strconv.Atoi(dPhoneStr)
